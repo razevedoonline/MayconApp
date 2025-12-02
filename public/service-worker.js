@@ -233,3 +233,4 @@ async function clearPendingData(storeName) {
 console.log('[ServiceWorker] Loaded successfully');
 
 
+
