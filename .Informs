@@ -1,0 +1,125 @@
+Requisitos do Aplicativo Médico (React Native/Expo)
+Com base na sua ideia de um aplicativo médico para clientes, onde o médico fornece funcionalidades e informações, aqui estão os requisitos divididos por áreas principais.
+
+1. Requisitos do Usuário (Cliente/Paciente)
+Estes são os recursos que o cliente final terá acesso no aplicativo.
+
+Acesso e Perfil
+Registro/Login Seguro:
+
+Criação de conta via e-mail/senha ou integração com redes sociais (opcional).
+
+Recuperação de senha.
+
+Visualização e Edição de Perfil:
+
+Informações pessoais (nome, data de nascimento, contato, etc.).
+
+Foto de perfil.
+
+Informações e Documentação Médica
+Prontuário/Resumo de Saúde:
+
+Visualização de diagnósticos e histórico médico fornecidos pelo médico.
+
+Lista de alergias e condições pré-existentes.
+
+Gerenciamento de Medicamentos:
+
+Lista de medicamentos atuais prescritos pelo médico (nome, dosagem, frequência).
+
+Lembretes de Medicação (Notificações push agendadas).
+
+Resultados de Exames:
+
+Visualização e download de arquivos de exames (PDF, imagem) enviados pelo médico.
+
+Documentos Úteis:
+
+Acesso a receitas médicas digitalizadas ou geradas no aplicativo.
+
+Comunicação e Agendamento
+Agendamento de Consultas:
+
+Visualização da disponibilidade do médico em tempo real (datas e horários).
+
+Marcação, reagendamento e cancelamento de consultas.
+
+Lembretes de Consulta (Notificações push).
+
+Chat Seguro (Mensagens):
+
+Canal de comunicação direta e segura com o médico ou sua equipe.
+
+Capacidade de enviar imagens ou documentos através do chat.
+
+Teleconsulta (Opcional, mas recomendado):
+
+Funcionalidade integrada para iniciar uma videochamada (consulta online).
+
+Recursos Educacionais e Acompanhamento
+Planos de Tratamento/Dieta/Exercícios:
+
+Visualização de planos personalizados criados e atribuídos pelo médico.
+
+Registro de Progresso (Ex: peso, ingestão de água, passos, etc.).
+
+Conteúdo Educacional:
+
+Acesso a artigos, vídeos ou guias sobre a sua condição ou tratamento, fornecidos pelo médico.
+
+2. Requisitos do Administrador (Médico)
+Estes são os recursos que o médico ou sua equipe precisa para gerenciar os clientes através de um Painel de Controle (pode ser um aplicativo separado, um módulo no mesmo app, ou um portal web).
+
+Gerenciamento de Clientes/Pacientes
+Busca e Visualização de Pacientes:
+
+Acesso fácil a todos os pacientes cadastrados.
+
+Visualização completa do perfil do paciente e histórico no app.
+
+Atualização de Prontuário:
+
+Ferramenta para adicionar, editar e atualizar o histórico médico, alergias e diagnósticos do paciente.
+
+Envio de Documentos:
+
+Upload de receitas, resultados de exames e outros documentos para o perfil do cliente.
+
+Comunicação e Planejamento
+Gestão de Agendamentos:
+
+Visualização de todas as consultas agendadas (calendário).
+
+Ferramenta para confirmar, reagendar ou cancelar consultas.
+
+Definir e ajustar horários de disponibilidade.
+
+Comunicação Bidirecional:
+
+Responder e gerenciar as mensagens dos pacientes pelo chat seguro.
+
+Criação e Atribuição de Planos:
+
+Ferramenta para criar planos de tratamento/dieta/exercícios e atribuí-los a pacientes específicos.
+
+3. Requisitos Técnicos e de Segurança
+Estes são essenciais para a estrutura e conformidade do aplicativo.
+
+Plataformas: iOS e Android (uso do Expo para desenvolvimento e build).
+
+Tecnologia: React Native (linguagem JavaScript/TypeScript).
+
+Backend: Escolha de um backend (ex: Firebase, AWS, Node.js + PostgreSQL) para API e banco de dados.
+
+Segurança e Conformidade:
+
+Criptografia de dados em trânsito e em repouso.
+
+Conformidade com a LGPD (Lei Geral de Proteção de Dados) no Brasil.
+
+Autenticação JWT/OAuth para segurança de login.
+
+Notificações: Integração de Notificações Push (via Expo Go ou Firebase/similar) para lembretes e alertas.
+
+Estabilidade: Gerenciamento de estado robusto (ex: Redux, Zustand) e testes unitários.

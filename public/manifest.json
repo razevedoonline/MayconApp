@@ -1,0 +1,27 @@
+{
+  "name": "Dr Maycon",
+  "short_name": "Dr Maycon",
+  "description": "Aplicativo médico para pacientes do Dr. Maycon Fellipe - Agende consultas, veja exames, receitas e muito mais",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F5F7FA",
+  "theme_color": "#1A5F7A",
+  "lang": "pt-BR",
+  "categories": ["health", "medical", "lifestyle"],
+  "icons": [
+    {
+      "src": "/assets/icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/favicon.png",
+      "sizes": "48x48",
+      "type": "image/png"
+    }
+  ],
+  "prefer_related_applications": false
+}
