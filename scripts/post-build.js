@@ -73,28 +73,22 @@ const indexContent = `<!DOCTYPE html>
     html,body{
       margin:0;
       padding:0;
-      background:#F5F7FA;
+      background:#57C5B6;
       width:100%;
       height:100%;
       overflow:hidden;
-    }
-    @supports(padding-bottom:env(safe-area-inset-bottom)){
-      html,body{
-        padding-bottom:env(safe-area-inset-bottom);
-        background:#F5F7FA;
-      }
     }
     #root{
       position:absolute;
       top:0;
       left:0;
       right:0;
-      bottom:0;
-      bottom:calc(0px - env(safe-area-inset-bottom,0px));
+      bottom:-50px;
+      padding-bottom:50px;
       display:flex;
       flex-direction:column;
       overflow:hidden;
-      background:#F5F7FA;
+      background:#57C5B6;
     }
   </style>
 </head>
