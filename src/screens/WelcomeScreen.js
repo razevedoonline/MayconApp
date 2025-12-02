@@ -213,6 +213,7 @@ const FeatureItem = ({ icon, title, description }) => (
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#57C5B6',
   },
   gradient: {
     flex: 1,
@@ -222,7 +223,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingHorizontal: 24,
     paddingTop: 50,
-    paddingBottom: 40,
+    paddingBottom: 60,
     justifyContent: 'space-between',
   },
   decorativeCircle1: {
