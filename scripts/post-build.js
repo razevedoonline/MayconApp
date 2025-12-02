@@ -70,20 +70,35 @@ const indexContent = `<!DOCTYPE html>
   
   <style>
     *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-    html{height:100%}
+    html{
+      height:100%;
+      height:100vh;
+      height:-webkit-fill-available;
+      background:#F5F7FA;
+    }
     body{
       margin:0;
       padding:0;
-      min-height:100%;
       height:100%;
+      min-height:100vh;
+      min-height:-webkit-fill-available;
       overflow:hidden;
       background:#F5F7FA;
+      position:fixed;
+      top:0;
+      left:0;
+      right:0;
+      bottom:0;
+      width:100%;
     }
     #root{
       display:flex;
       flex-direction:column;
-      min-height:100%;
+      width:100%;
       height:100%;
+      min-height:100vh;
+      min-height:-webkit-fill-available;
+      overflow:hidden;
     }
   </style>
 </head>
