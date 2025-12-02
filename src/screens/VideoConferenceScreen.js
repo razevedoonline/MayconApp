@@ -8,9 +8,9 @@ import {
   Image,
   Animated,
   Dimensions,
-  Alert,
 } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import Alert from '../utils/alert';
 import { LinearGradient } from 'expo-linear-gradient';
 
 const { width, height } = Dimensions.get('window');

@@ -11,9 +11,9 @@ import {
   Image,
   Modal,
   TouchableWithoutFeedback,
-  Alert,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import Alert from '../utils/alert';
 import { Ionicons, MaterialCommunityIcons, FontAwesome5 } from '@expo/vector-icons';
 import { LineChart } from 'react-native-chart-kit';
 

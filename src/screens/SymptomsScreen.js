@@ -8,10 +8,10 @@ import {
   StatusBar,
   TextInput,
   Dimensions,
-  Alert,
   Modal,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import Alert from '../utils/alert';
 import { Ionicons, MaterialCommunityIcons, FontAwesome5 } from '@expo/vector-icons';
 
 const { width } = Dimensions.get('window');

@@ -6,11 +6,11 @@ import {
   TouchableOpacity,
   ScrollView,
   StatusBar,
-  Alert,
   Switch,
   Animated,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import Alert from '../utils/alert';
 import { Ionicons, MaterialCommunityIcons, FontAwesome5 } from '@expo/vector-icons';
 
 const DevicesScreen = ({ navigation }) => {

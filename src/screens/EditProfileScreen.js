@@ -8,11 +8,11 @@ import {
   ScrollView,
   StatusBar,
   Image,
-  Alert,
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import Alert from '../utils/alert';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 // Foto do paciente

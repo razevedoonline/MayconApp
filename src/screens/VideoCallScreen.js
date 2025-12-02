@@ -6,11 +6,11 @@ import {
   TouchableOpacity,
   ScrollView,
   StatusBar,
-  Alert,
   Linking,
   Image,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import Alert from '../utils/alert';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 const doctorPhoto = require('../../assets/doctor.png');
