@@ -70,40 +70,31 @@ const indexContent = `<!DOCTYPE html>
   
   <style>
     *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-    html{
-      background:#F5F7FA;
-      height:100%;
-    }
-    body{
+    html,body{
       margin:0;
       padding:0;
       background:#F5F7FA;
-      min-height:100%;
-      min-height:100vh;
-      min-height:100dvh;
-      min-height:-webkit-fill-available;
+      width:100%;
+      height:100%;
       overflow:hidden;
-      position:relative;
     }
-    body::after{
-      content:'';
-      position:fixed;
-      left:0;
-      right:0;
-      bottom:0;
-      height:100px;
-      background:#F5F7FA;
-      z-index:-1;
+    @supports(padding-bottom:env(safe-area-inset-bottom)){
+      html,body{
+        padding-bottom:env(safe-area-inset-bottom);
+        background:#F5F7FA;
+      }
     }
     #root{
-      position:fixed;
+      position:absolute;
       top:0;
       left:0;
       right:0;
       bottom:0;
+      bottom:calc(0px - env(safe-area-inset-bottom,0px));
       display:flex;
       flex-direction:column;
       overflow:hidden;
+      background:#F5F7FA;
     }
   </style>
 </head>
