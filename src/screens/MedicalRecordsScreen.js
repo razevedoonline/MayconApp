@@ -12,8 +12,69 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons, MaterialCommunityIcons, FontAwesome5 } from '@expo/vector-icons';
+import { LineChart } from 'react-native-chart-kit';
 
 const { width } = Dimensions.get('window');
+
+// Histórico de sinais vitais para gráficos
+const vitalsHistory = {
+  pressure: {
+    name: 'Pressão Arterial',
+    icon: 'heart',
+    color: '#E53935',
+    unit: 'mmHg',
+    data: [
+      { date: '01/08', systolic: 130, diastolic: 85 },
+      { date: '01/09', systolic: 128, diastolic: 82 },
+      { date: '01/10', systolic: 125, diastolic: 80 },
+      { date: '01/11', systolic: 122, diastolic: 78 },
+      { date: '01/12', systolic: 120, diastolic: 80 },
+    ],
+  },
+  glucose: {
+    name: 'Glicose',
+    icon: 'water',
+    color: '#2196F3',
+    unit: 'mg/dL',
+    refMin: 70,
+    refMax: 100,
+    data: [
+      { date: '01/08', value: 110 },
+      { date: '01/09', value: 105 },
+      { date: '01/10', value: 102 },
+      { date: '01/11', value: 100 },
+      { date: '01/12', value: 98 },
+    ],
+  },
+  weight: {
+    name: 'Peso',
+    icon: 'scale-bathroom',
+    color: '#4CAF50',
+    unit: 'kg',
+    data: [
+      { date: '01/08', value: 72 },
+      { date: '01/09', value: 71 },
+      { date: '01/10', value: 70 },
+      { date: '01/11', value: 69 },
+      { date: '01/12', value: 68 },
+    ],
+  },
+  imc: {
+    name: 'IMC',
+    icon: 'human-male-height',
+    color: '#9C27B0',
+    unit: '',
+    refMin: 18.5,
+    refMax: 25,
+    data: [
+      { date: '01/08', value: 27.4 },
+      { date: '01/09', value: 27.0 },
+      { date: '01/10', value: 26.7 },
+      { date: '01/11', value: 26.3 },
+      { date: '01/12', value: 25.9 },
+    ],
+  },
+};
 
 // Dados do prontuário
 const medicalData = {
@@ -125,6 +186,13 @@ const MedicalRecordsScreen = ({ navigation }) => {
   const [activeSection, setActiveSection] = useState('overview');
   const [selectedConsultation, setSelectedConsultation] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
+  const [selectedVital, setSelectedVital] = useState(null);
+  const [showVitalModal, setShowVitalModal] = useState(false);
+
+  const openVitalChart = (vitalType) => {
+    setSelectedVital({ type: vitalType, ...vitalsHistory[vitalType] });
+    setShowVitalModal(true);
+  };
 
   const sections = [
     { id: 'overview', title: 'Resumo', icon: 'document-text' },
@@ -169,28 +237,49 @@ const MedicalRecordsScreen = ({ navigation }) => {
         <View style={styles.cardHeader}>
           <MaterialCommunityIcons name="heart-pulse" size={20} color="#E53935" />
           <Text style={styles.cardTitle}>Últimos Sinais Vitais</Text>
+          <Text style={styles.cardHint}>Toque para ver gráfico</Text>
         </View>
         <View style={styles.vitalsGrid}>
-          <View style={styles.vitalItem}>
+          <TouchableOpacity 
+            style={styles.vitalItem}
+            onPress={() => openVitalChart('pressure')}
+            activeOpacity={0.7}
+          >
             <MaterialCommunityIcons name="heart" size={24} color="#E53935" />
             <Text style={styles.vitalValue}>{medicalData.vitals.pressure}</Text>
             <Text style={styles.vitalLabel}>Pressão</Text>
-          </View>
-          <View style={styles.vitalItem}>
+            <Ionicons name="stats-chart" size={12} color="#999" style={styles.vitalChartIcon} />
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={styles.vitalItem}
+            onPress={() => openVitalChart('glucose')}
+            activeOpacity={0.7}
+          >
             <MaterialCommunityIcons name="water" size={24} color="#2196F3" />
             <Text style={styles.vitalValue}>{medicalData.vitals.glucose}</Text>
             <Text style={styles.vitalLabel}>Glicose</Text>
-          </View>
-          <View style={styles.vitalItem}>
+            <Ionicons name="stats-chart" size={12} color="#999" style={styles.vitalChartIcon} />
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={styles.vitalItem}
+            onPress={() => openVitalChart('weight')}
+            activeOpacity={0.7}
+          >
             <MaterialCommunityIcons name="scale-bathroom" size={24} color="#4CAF50" />
             <Text style={styles.vitalValue}>{medicalData.vitals.weight}</Text>
             <Text style={styles.vitalLabel}>Peso</Text>
-          </View>
-          <View style={styles.vitalItem}>
+            <Ionicons name="stats-chart" size={12} color="#999" style={styles.vitalChartIcon} />
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={styles.vitalItem}
+            onPress={() => openVitalChart('imc')}
+            activeOpacity={0.7}
+          >
             <MaterialCommunityIcons name="human-male-height" size={24} color="#9C27B0" />
             <Text style={styles.vitalValue}>{medicalData.vitals.imc}</Text>
             <Text style={styles.vitalLabel}>IMC</Text>
-          </View>
+            <Ionicons name="stats-chart" size={12} color="#999" style={styles.vitalChartIcon} />
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -453,6 +542,120 @@ const MedicalRecordsScreen = ({ navigation }) => {
             </TouchableWithoutFeedback>
           </View>
         </TouchableWithoutFeedback>
+      </Modal>
+
+      {/* Modal de Gráfico de Sinais Vitais */}
+      <Modal
+        visible={showVitalModal}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setShowVitalModal(false)}
+      >
+        <View style={styles.vitalModalOverlay}>
+          <View style={styles.vitalModalContent}>
+            <View style={styles.modalHandle} />
+            
+            {selectedVital && (
+              <>
+                <View style={styles.vitalModalHeader}>
+                  <View style={styles.vitalModalTitleRow}>
+                    <View style={[styles.vitalModalIcon, { backgroundColor: selectedVital.color + '20' }]}>
+                      <MaterialCommunityIcons 
+                        name={selectedVital.icon} 
+                        size={28} 
+                        color={selectedVital.color} 
+                      />
+                    </View>
+                    <View>
+                      <Text style={styles.vitalModalTitle}>{selectedVital.name}</Text>
+                      <Text style={styles.vitalModalSubtitle}>Últimos 5 resultados</Text>
+                    </View>
+                  </View>
+                  <TouchableOpacity onPress={() => setShowVitalModal(false)}>
+                    <Ionicons name="close" size={24} color="#666" />
+                  </TouchableOpacity>
+                </View>
+
+                {/* Valor Atual */}
+                <View style={[styles.vitalCurrentValue, { backgroundColor: selectedVital.color + '10' }]}>
+                  <Text style={styles.vitalCurrentLabel}>Último resultado</Text>
+                  <Text style={[styles.vitalCurrentNumber, { color: selectedVital.color }]}>
+                    {selectedVital.type === 'pressure' 
+                      ? `${selectedVital.data[selectedVital.data.length - 1].systolic}/${selectedVital.data[selectedVital.data.length - 1].diastolic}`
+                      : selectedVital.data[selectedVital.data.length - 1].value}
+                    <Text style={styles.vitalCurrentUnit}> {selectedVital.unit}</Text>
+                  </Text>
+                  <Text style={styles.vitalCurrentDate}>
+                    {selectedVital.data[selectedVital.data.length - 1].date}/2025
+                  </Text>
+                </View>
+
+                {/* Gráfico */}
+                <View style={styles.vitalChartContainer}>
+                  <LineChart
+                    data={{
+                      labels: selectedVital.data.map(d => d.date),
+                      datasets: selectedVital.type === 'pressure' 
+                        ? [
+                            { data: selectedVital.data.map(d => d.systolic), color: () => '#E53935' },
+                            { data: selectedVital.data.map(d => d.diastolic), color: () => '#FF8A80' },
+                          ]
+                        : [{ data: selectedVital.data.map(d => d.value) }],
+                    }}
+                    width={width - 60}
+                    height={200}
+                    chartConfig={{
+                      backgroundColor: '#FFFFFF',
+                      backgroundGradientFrom: '#FFFFFF',
+                      backgroundGradientTo: '#FFFFFF',
+                      decimalPlaces: selectedVital.type === 'imc' ? 1 : 0,
+                      color: (opacity = 1) => selectedVital.color,
+                      labelColor: (opacity = 1) => '#666',
+                      style: { borderRadius: 16 },
+                      propsForDots: {
+                        r: '5',
+                        strokeWidth: '2',
+                        stroke: selectedVital.color,
+                      },
+                    }}
+                    bezier
+                    style={styles.vitalChart}
+                  />
+                  {selectedVital.type === 'pressure' && (
+                    <View style={styles.vitalChartLegend}>
+                      <View style={styles.legendItem}>
+                        <View style={[styles.legendDot, { backgroundColor: '#E53935' }]} />
+                        <Text style={styles.legendText}>Sistólica</Text>
+                      </View>
+                      <View style={styles.legendItem}>
+                        <View style={[styles.legendDot, { backgroundColor: '#FF8A80' }]} />
+                        <Text style={styles.legendText}>Diastólica</Text>
+                      </View>
+                    </View>
+                  )}
+                </View>
+
+                {/* Histórico */}
+                <Text style={styles.vitalHistoryTitle}>📋 Histórico</Text>
+                <ScrollView style={styles.vitalHistoryList} showsVerticalScrollIndicator={false}>
+                  {[...selectedVital.data].reverse().map((item, index) => (
+                    <View key={index} style={styles.vitalHistoryItem}>
+                      <View style={styles.vitalHistoryDate}>
+                        <Ionicons name="calendar-outline" size={14} color="#999" />
+                        <Text style={styles.vitalHistoryDateText}>{item.date}/2025</Text>
+                      </View>
+                      <Text style={[styles.vitalHistoryValue, { color: selectedVital.color }]}>
+                        {selectedVital.type === 'pressure' 
+                          ? `${item.systolic}/${item.diastolic} ${selectedVital.unit}`
+                          : `${item.value} ${selectedVital.unit}`}
+                      </Text>
+                    </View>
+                  ))}
+                </ScrollView>
+              </>
+            )}
+          </View>
+        </View>
       </Modal>
     </View>
   );
@@ -901,6 +1104,139 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#333',
     flex: 1,
+  },
+  // Estilos do Hint e ícone do gráfico
+  cardHint: {
+    fontSize: 11,
+    color: '#999',
+    marginLeft: 'auto',
+  },
+  vitalChartIcon: {
+    position: 'absolute',
+    top: 4,
+    right: 4,
+  },
+  // Estilos do Modal de Sinais Vitais
+  vitalModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+  },
+  vitalModalContent: {
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    padding: 20,
+    maxHeight: '85%',
+  },
+  vitalModalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 20,
+  },
+  vitalModalTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  vitalModalIcon: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  vitalModalTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#333',
+  },
+  vitalModalSubtitle: {
+    fontSize: 13,
+    color: '#666',
+    marginTop: 2,
+  },
+  vitalCurrentValue: {
+    alignItems: 'center',
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 16,
+  },
+  vitalCurrentLabel: {
+    fontSize: 13,
+    color: '#666',
+    marginBottom: 4,
+  },
+  vitalCurrentNumber: {
+    fontSize: 36,
+    fontWeight: '800',
+  },
+  vitalCurrentUnit: {
+    fontSize: 16,
+    fontWeight: '400',
+  },
+  vitalCurrentDate: {
+    fontSize: 12,
+    color: '#999',
+    marginTop: 4,
+  },
+  vitalChartContainer: {
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  vitalChart: {
+    borderRadius: 16,
+  },
+  vitalChartLegend: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 20,
+    marginTop: 10,
+  },
+  legendItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  legendDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+  },
+  legendText: {
+    fontSize: 12,
+    color: '#666',
+  },
+  vitalHistoryTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#333',
+    marginBottom: 12,
+  },
+  vitalHistoryList: {
+    maxHeight: 150,
+  },
+  vitalHistoryItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F0F0F0',
+  },
+  vitalHistoryDate: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  vitalHistoryDateText: {
+    fontSize: 13,
+    color: '#666',
+  },
+  vitalHistoryValue: {
+    fontSize: 16,
+    fontWeight: '700',
   },
 });
 

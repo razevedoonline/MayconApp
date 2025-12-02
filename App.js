@@ -16,6 +16,9 @@ import PharmacyScreen from './src/screens/PharmacyScreen';
 import SymptomsScreen from './src/screens/SymptomsScreen';
 import HealthScreen from './src/screens/HealthScreen';
 import ChatScreen from './src/screens/ChatScreen';
+import VideoCallScreen from './src/screens/VideoCallScreen';
+import VideoConferenceScreen from './src/screens/VideoConferenceScreen';
+import DevicesScreen from './src/screens/DevicesScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -44,6 +47,9 @@ export default function App() {
           <Stack.Screen name="Symptoms" component={SymptomsScreen} />
           <Stack.Screen name="Health" component={HealthScreen} />
           <Stack.Screen name="Chat" component={ChatScreen} />
+        <Stack.Screen name="VideoCall" component={VideoCallScreen} />
+        <Stack.Screen name="VideoConference" component={VideoConferenceScreen} />
+        <Stack.Screen name="Devices" component={DevicesScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </View>

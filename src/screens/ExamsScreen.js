@@ -13,8 +13,125 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { LineChart } from 'react-native-chart-kit';
 
 const { width } = Dimensions.get('window');
+
+// Histórico de exames numéricos para gráficos
+const examHistory = {
+  'Glicemia de Jejum': {
+    unit: 'mg/dL',
+    refMin: 70,
+    refMax: 100,
+    icon: 'water',
+    color: '#9C27B0',
+    data: [
+      { date: '15/05/2025', value: 105 },
+      { date: '01/08/2025', value: 98 },
+      { date: '15/10/2025', value: 102 },
+      { date: '01/11/2025', value: 95 },
+      { date: '01/12/2025', value: 92 },
+    ],
+  },
+  'Hemoglobina Glicada': {
+    unit: '%',
+    refMin: 4.0,
+    refMax: 7.0,
+    icon: 'water-percent',
+    color: '#E91E63',
+    data: [
+      { date: '15/01/2025', value: 7.8 },
+      { date: '15/03/2025', value: 7.5 },
+      { date: '15/05/2025', value: 7.2 },
+      { date: '15/08/2025', value: 6.9 },
+      { date: '15/11/2025', value: 6.7 },
+    ],
+  },
+  'Colesterol Total': {
+    unit: 'mg/dL',
+    refMin: 0,
+    refMax: 200,
+    icon: 'heart-pulse',
+    color: '#F44336',
+    data: [
+      { date: '01/04/2025', value: 220 },
+      { date: '01/06/2025', value: 210 },
+      { date: '01/08/2025', value: 195 },
+      { date: '01/10/2025', value: 188 },
+      { date: '01/12/2025', value: 180 },
+    ],
+  },
+  'HDL': {
+    unit: 'mg/dL',
+    refMin: 40,
+    refMax: 60,
+    icon: 'heart',
+    color: '#4CAF50',
+    data: [
+      { date: '01/04/2025', value: 38 },
+      { date: '01/06/2025', value: 42 },
+      { date: '01/08/2025', value: 45 },
+      { date: '01/10/2025', value: 48 },
+      { date: '01/12/2025', value: 52 },
+    ],
+  },
+  'LDL': {
+    unit: 'mg/dL',
+    refMin: 0,
+    refMax: 100,
+    icon: 'heart-outline',
+    color: '#FF9800',
+    data: [
+      { date: '01/04/2025', value: 145 },
+      { date: '01/06/2025', value: 130 },
+      { date: '01/08/2025', value: 118 },
+      { date: '01/10/2025', value: 105 },
+      { date: '01/12/2025', value: 95 },
+    ],
+  },
+  'Triglicerídeos': {
+    unit: 'mg/dL',
+    refMin: 0,
+    refMax: 150,
+    icon: 'water-outline',
+    color: '#2196F3',
+    data: [
+      { date: '01/04/2025', value: 180 },
+      { date: '01/06/2025', value: 165 },
+      { date: '01/08/2025', value: 155 },
+      { date: '01/10/2025', value: 142 },
+      { date: '01/12/2025', value: 135 },
+    ],
+  },
+  'Creatinina': {
+    unit: 'mg/dL',
+    refMin: 0.7,
+    refMax: 1.3,
+    icon: 'flask',
+    color: '#795548',
+    data: [
+      { date: '01/06/2025', value: 1.1 },
+      { date: '01/08/2025', value: 1.0 },
+      { date: '01/09/2025', value: 0.95 },
+      { date: '01/10/2025', value: 0.9 },
+      { date: '01/11/2025', value: 0.88 },
+    ],
+  },
+  'Hemoglobina': {
+    unit: 'g/dL',
+    refMin: 12.0,
+    refMax: 16.0,
+    icon: 'blood-bag',
+    color: '#D32F2F',
+    data: [
+      { date: '01/05/2025', value: 13.5 },
+      { date: '01/07/2025', value: 14.0 },
+      { date: '01/09/2025', value: 13.8 },
+      { date: '01/10/2025', value: 14.2 },
+      { date: '01/12/2025', value: 14.5 },
+    ],
+  },
+};
 
 // Laboratórios disponíveis com preços e descontos para pacientes do Dr. Maycon
 const availableLabs = {
@@ -306,6 +423,8 @@ const ExamsScreen = ({ navigation }) => {
   const [showLabsModal, setShowLabsModal] = useState(false);
   const [selectedPendingExam, setSelectedPendingExam] = useState(null);
   const [sortBy, setSortBy] = useState('price'); // 'price', 'distance'
+  const [selectedGraphExam, setSelectedGraphExam] = useState(null);
+  const [showGraphModal, setShowGraphModal] = useState(false);
 
   // Função para fechar o modal de laboratórios e limpar o estado
   const closeLabsModal = () => {
@@ -564,7 +683,7 @@ const ExamsScreen = ({ navigation }) => {
             color={activeTab === 'current' ? '#FFFFFF' : '#666'} 
           />
           <Text style={[styles.tabText, activeTab === 'current' && styles.tabTextActive]}>
-            Consulta Atual
+            Atual
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -578,6 +697,19 @@ const ExamsScreen = ({ navigation }) => {
           />
           <Text style={[styles.tabText, activeTab === 'history' && styles.tabTextActive]}>
             Histórico
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.tab, activeTab === 'graphs' && styles.tabActive]}
+          onPress={() => setActiveTab('graphs')}
+        >
+          <Ionicons 
+            name="stats-chart" 
+            size={18} 
+            color={activeTab === 'graphs' ? '#FFFFFF' : '#666'} 
+          />
+          <Text style={[styles.tabText, activeTab === 'graphs' && styles.tabTextActive]}>
+            Gráficos
           </Text>
         </TouchableOpacity>
       </View>
@@ -600,7 +732,7 @@ const ExamsScreen = ({ navigation }) => {
               </Text>
             </View>
           )
-        ) : (
+        ) : activeTab === 'history' ? (
           historyExams.length > 0 ? (
             historyExams.map(renderGroup)
           ) : (
@@ -612,6 +744,70 @@ const ExamsScreen = ({ navigation }) => {
               </Text>
             </View>
           )
+        ) : (
+          /* Aba Gráficos */
+          <View>
+            <Text style={styles.graphsSectionTitle}>📊 Acompanhe sua Evolução</Text>
+            <Text style={styles.graphsSubtitle}>
+              Toque em um exame para ver o gráfico com os últimos 5 resultados
+            </Text>
+            
+            {Object.entries(examHistory).map(([examName, examData]) => {
+              const lastValue = examData.data[examData.data.length - 1].value;
+              const isNormal = lastValue >= examData.refMin && lastValue <= examData.refMax;
+              const trend = examData.data[examData.data.length - 1].value - examData.data[0].value;
+              
+              return (
+                <TouchableOpacity
+                  key={examName}
+                  style={styles.graphExamCard}
+                  onPress={() => {
+                    setSelectedGraphExam({ name: examName, ...examData });
+                    setShowGraphModal(true);
+                  }}
+                  activeOpacity={0.8}
+                >
+                  <View style={styles.graphExamHeader}>
+                    <View style={[styles.graphExamIcon, { backgroundColor: examData.color + '20' }]}>
+                      <MaterialCommunityIcons name={examData.icon} size={24} color={examData.color} />
+                    </View>
+                    <View style={styles.graphExamInfo}>
+                      <Text style={styles.graphExamName}>{examName}</Text>
+                      <Text style={styles.graphExamRef}>
+                        Ref: {examData.refMin} - {examData.refMax} {examData.unit}
+                      </Text>
+                    </View>
+                    <View style={styles.graphExamValue}>
+                      <Text style={[styles.graphExamValueText, { color: isNormal ? '#4CAF50' : '#FF9800' }]}>
+                        {lastValue}
+                      </Text>
+                      <Text style={styles.graphExamUnit}>{examData.unit}</Text>
+                    </View>
+                  </View>
+                  
+                  <View style={styles.graphExamFooter}>
+                    <View style={styles.graphExamTrend}>
+                      <Ionicons 
+                        name={trend < 0 ? 'trending-down' : trend > 0 ? 'trending-up' : 'remove'} 
+                        size={16} 
+                        color={trend < 0 ? '#4CAF50' : trend > 0 ? '#FF9800' : '#999'} 
+                      />
+                      <Text style={[
+                        styles.graphExamTrendText,
+                        { color: trend < 0 ? '#4CAF50' : trend > 0 ? '#FF9800' : '#999' }
+                      ]}>
+                        {trend > 0 ? '+' : ''}{trend.toFixed(1)} desde {examData.data[0].date}
+                      </Text>
+                    </View>
+                    <View style={styles.graphExamAction}>
+                      <Text style={styles.graphExamActionText}>Ver gráfico</Text>
+                      <Ionicons name="chevron-forward" size={16} color="#1A5F7A" />
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
         )}
       </ScrollView>
 
@@ -907,6 +1103,145 @@ const ExamsScreen = ({ navigation }) => {
           </View>
         </View>
       </Modal>
+
+      {/* Modal de Gráfico */}
+      <Modal
+        visible={showGraphModal}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setShowGraphModal(false)}
+      >
+        <View style={styles.graphModalOverlay}>
+          <View style={styles.graphModalContent}>
+            <View style={styles.modalHandle} />
+            
+            {selectedGraphExam && (
+              <>
+                <View style={styles.graphModalHeader}>
+                  <View style={styles.graphModalTitleContainer}>
+                    <View style={[styles.graphModalIcon, { backgroundColor: selectedGraphExam.color + '20' }]}>
+                      <MaterialCommunityIcons 
+                        name={selectedGraphExam.icon} 
+                        size={28} 
+                        color={selectedGraphExam.color} 
+                      />
+                    </View>
+                    <View>
+                      <Text style={styles.graphModalTitle}>{selectedGraphExam.name}</Text>
+                      <Text style={styles.graphModalSubtitle}>
+                        Últimos 5 resultados
+                      </Text>
+                    </View>
+                  </View>
+                  <TouchableOpacity onPress={() => setShowGraphModal(false)}>
+                    <Ionicons name="close" size={24} color="#666" />
+                  </TouchableOpacity>
+                </View>
+
+                {/* Valor atual */}
+                <View style={styles.graphCurrentValue}>
+                  <Text style={styles.graphCurrentLabel}>Último resultado</Text>
+                  <View style={styles.graphCurrentValueRow}>
+                    <Text style={[styles.graphCurrentNumber, { color: selectedGraphExam.color }]}>
+                      {selectedGraphExam.data[selectedGraphExam.data.length - 1].value}
+                    </Text>
+                    <Text style={styles.graphCurrentUnit}>{selectedGraphExam.unit}</Text>
+                  </View>
+                  <Text style={styles.graphCurrentDate}>
+                    {selectedGraphExam.data[selectedGraphExam.data.length - 1].date}
+                  </Text>
+                </View>
+
+                {/* Referência */}
+                <View style={styles.graphRefContainer}>
+                  <View style={styles.graphRefItem}>
+                    <Text style={styles.graphRefLabel}>Mínimo</Text>
+                    <Text style={styles.graphRefValue}>{selectedGraphExam.refMin} {selectedGraphExam.unit}</Text>
+                  </View>
+                  <View style={[styles.graphRefItem, styles.graphRefItemCenter]}>
+                    <Text style={styles.graphRefLabel}>Referência</Text>
+                    <Text style={[styles.graphRefValue, { color: '#4CAF50' }]}>Normal</Text>
+                  </View>
+                  <View style={styles.graphRefItem}>
+                    <Text style={styles.graphRefLabel}>Máximo</Text>
+                    <Text style={styles.graphRefValue}>{selectedGraphExam.refMax} {selectedGraphExam.unit}</Text>
+                  </View>
+                </View>
+
+                {/* Gráfico */}
+                <View style={styles.graphChartContainer}>
+                  <LineChart
+                    data={{
+                      labels: selectedGraphExam.data.map(d => d.date.substring(0, 5)),
+                      datasets: [{
+                        data: selectedGraphExam.data.map(d => d.value),
+                      }],
+                    }}
+                    width={width - 60}
+                    height={200}
+                    chartConfig={{
+                      backgroundColor: '#FFFFFF',
+                      backgroundGradientFrom: '#FFFFFF',
+                      backgroundGradientTo: '#FFFFFF',
+                      decimalPlaces: 1,
+                      color: (opacity = 1) => selectedGraphExam.color,
+                      labelColor: (opacity = 1) => '#666',
+                      style: { borderRadius: 16 },
+                      propsForDots: {
+                        r: '6',
+                        strokeWidth: '2',
+                        stroke: selectedGraphExam.color,
+                      },
+                      propsForBackgroundLines: {
+                        strokeDasharray: '',
+                        stroke: '#E8E8E8',
+                      },
+                    }}
+                    bezier
+                    style={styles.graphChart}
+                    fromZero={false}
+                  />
+                </View>
+
+                {/* Histórico */}
+                <Text style={styles.graphHistoryTitle}>📋 Histórico de Resultados</Text>
+                <ScrollView style={styles.graphHistoryList} showsVerticalScrollIndicator={false}>
+                  {[...selectedGraphExam.data].reverse().map((item, index) => {
+                    const isNormal = item.value >= selectedGraphExam.refMin && item.value <= selectedGraphExam.refMax;
+                    return (
+                      <View key={index} style={styles.graphHistoryItem}>
+                        <View style={styles.graphHistoryDate}>
+                          <Ionicons name="calendar-outline" size={14} color="#999" />
+                          <Text style={styles.graphHistoryDateText}>{item.date}</Text>
+                        </View>
+                        <View style={styles.graphHistoryValue}>
+                          <Text style={[
+                            styles.graphHistoryValueText,
+                            { color: isNormal ? '#4CAF50' : '#FF9800' }
+                          ]}>
+                            {item.value} {selectedGraphExam.unit}
+                          </Text>
+                          <View style={[
+                            styles.graphHistoryStatus,
+                            { backgroundColor: isNormal ? '#E8F5E9' : '#FFF3E0' }
+                          ]}>
+                            <Text style={[
+                              styles.graphHistoryStatusText,
+                              { color: isNormal ? '#4CAF50' : '#FF9800' }
+                            ]}>
+                              {isNormal ? 'Normal' : 'Atenção'}
+                            </Text>
+                          </View>
+                        </View>
+                      </View>
+                    );
+                  })}
+                </ScrollView>
+              </>
+            )}
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -973,7 +1308,7 @@ const styles = StyleSheet.create({
   tabsContainer: {
     flexDirection: 'row',
     backgroundColor: '#FFFFFF',
-    marginHorizontal: 20,
+    marginHorizontal: 16,
     marginTop: 16,
     borderRadius: 12,
     padding: 4,
@@ -988,15 +1323,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 4,
     borderRadius: 10,
-    gap: 6,
+    gap: 4,
   },
   tabActive: {
     backgroundColor: '#1A5F7A',
   },
   tabText: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '600',
     color: '#666',
   },
@@ -1601,6 +1937,241 @@ const styles = StyleSheet.create({
   legendText: {
     fontSize: 12,
     color: '#666',
+  },
+  // Estilos da aba Gráficos
+  graphsSectionTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#333',
+    marginBottom: 8,
+  },
+  graphsSubtitle: {
+    fontSize: 13,
+    color: '#666',
+    marginBottom: 20,
+    lineHeight: 18,
+  },
+  graphExamCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  graphExamHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  graphExamIcon: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  graphExamInfo: {
+    flex: 1,
+    marginLeft: 12,
+  },
+  graphExamName: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#333',
+  },
+  graphExamRef: {
+    fontSize: 12,
+    color: '#999',
+    marginTop: 2,
+  },
+  graphExamValue: {
+    alignItems: 'flex-end',
+  },
+  graphExamValueText: {
+    fontSize: 22,
+    fontWeight: '800',
+  },
+  graphExamUnit: {
+    fontSize: 11,
+    color: '#999',
+  },
+  graphExamFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 14,
+    paddingTop: 14,
+    borderTopWidth: 1,
+    borderTopColor: '#F0F0F0',
+  },
+  graphExamTrend: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  graphExamTrendText: {
+    fontSize: 12,
+  },
+  graphExamAction: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  graphExamActionText: {
+    fontSize: 13,
+    color: '#1A5F7A',
+    fontWeight: '600',
+  },
+  // Modal de Gráfico
+  graphModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+  },
+  graphModalContent: {
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    padding: 20,
+    maxHeight: '90%',
+  },
+  graphModalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 20,
+  },
+  graphModalTitleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  graphModalIcon: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  graphModalTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#333',
+  },
+  graphModalSubtitle: {
+    fontSize: 13,
+    color: '#666',
+    marginTop: 2,
+  },
+  graphCurrentValue: {
+    alignItems: 'center',
+    backgroundColor: '#F8F9FA',
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 16,
+  },
+  graphCurrentLabel: {
+    fontSize: 13,
+    color: '#666',
+    marginBottom: 4,
+  },
+  graphCurrentValueRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: 4,
+  },
+  graphCurrentNumber: {
+    fontSize: 42,
+    fontWeight: '800',
+  },
+  graphCurrentUnit: {
+    fontSize: 16,
+    color: '#666',
+  },
+  graphCurrentDate: {
+    fontSize: 12,
+    color: '#999',
+    marginTop: 4,
+  },
+  graphRefContainer: {
+    flexDirection: 'row',
+    backgroundColor: '#E8F5E9',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 16,
+  },
+  graphRefItem: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  graphRefItemCenter: {
+    borderLeftWidth: 1,
+    borderRightWidth: 1,
+    borderColor: 'rgba(76, 175, 80, 0.3)',
+  },
+  graphRefLabel: {
+    fontSize: 11,
+    color: '#666',
+    marginBottom: 2,
+  },
+  graphRefValue: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#333',
+  },
+  graphChartContainer: {
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  graphChart: {
+    borderRadius: 16,
+  },
+  graphHistoryTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#333',
+    marginBottom: 12,
+  },
+  graphHistoryList: {
+    maxHeight: 150,
+  },
+  graphHistoryItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F0F0F0',
+  },
+  graphHistoryDate: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  graphHistoryDateText: {
+    fontSize: 13,
+    color: '#666',
+  },
+  graphHistoryValue: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  graphHistoryValueText: {
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  graphHistoryStatus: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 8,
+  },
+  graphHistoryStatusText: {
+    fontSize: 10,
+    fontWeight: '600',
   },
 });
 

@@ -299,6 +299,24 @@ const HomeScreen = ({ navigation }) => {
       color: '#00BCD4',
       bgColor: '#E0F7FA',
     },
+    {
+      id: 10,
+      title: 'Videochamada',
+      subtitle: 'Consulta online',
+      icon: 'videocam',
+      iconType: 'Ionicons',
+      color: '#673AB7',
+      bgColor: '#EDE7F6',
+    },
+    {
+      id: 11,
+      title: 'Dispositivos',
+      subtitle: 'Conectar equipamentos',
+      icon: 'bluetooth',
+      iconType: 'Ionicons',
+      color: '#0288D1',
+      bgColor: '#E1F5FE',
+    },
   ];
 
   const renderIcon = (item) => {
@@ -539,6 +557,10 @@ const HomeScreen = ({ navigation }) => {
                       navigation.navigate('Health');
                     } else if (item.title === 'Chat') {
                       navigation.navigate('Chat');
+                    } else if (item.title === 'Videochamada') {
+                      navigation.navigate('VideoCall');
+                    } else if (item.title === 'Dispositivos') {
+                      navigation.navigate('Devices');
                     } else {
                       Alert.alert(item.title, `Funcionalidade "${item.title}" em desenvolvimento.`);
                     }
