@@ -69,8 +69,39 @@ const indexContent = `<!DOCTYPE html>
   <link rel="apple-touch-icon-precomposed" href="/assets/icon.png" />
   
   <style>
-    html,body{height:100%;margin:0;padding:0;overflow:hidden;background:#F5F7FA}
-    #root{display:flex;height:100%;flex:1}
+    *{box-sizing:border-box}
+    html,body{
+      height:100%;
+      width:100%;
+      margin:0;
+      padding:0;
+      overflow:hidden;
+      background:#1A5F7A;
+      position:fixed;
+      top:0;
+      left:0;
+      right:0;
+      bottom:0;
+    }
+    #root{
+      display:flex;
+      flex:1;
+      width:100%;
+      height:100%;
+      padding-top:env(safe-area-inset-top);
+      padding-bottom:env(safe-area-inset-bottom);
+      padding-left:env(safe-area-inset-left);
+      padding-right:env(safe-area-inset-right);
+      background:#F5F7FA;
+    }
+    @supports(padding:max(0px)){
+      #root{
+        padding-top:max(0px,env(safe-area-inset-top));
+        padding-bottom:max(0px,env(safe-area-inset-bottom));
+        padding-left:max(0px,env(safe-area-inset-left));
+        padding-right:max(0px,env(safe-area-inset-right));
+      }
+    }
   </style>
 </head>
 <body>
